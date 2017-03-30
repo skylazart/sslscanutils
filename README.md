@@ -16,7 +16,7 @@ Options:
 ```
   
 # Examples
-* Using sslscan remotely throughout an ssh session
+* Using sslscan remotely throughout a ssh session
 
 ```
 ./scanutil.py -H target -P 443 -S 'ssh user@remoteshell.com'
