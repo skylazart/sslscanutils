@@ -9,7 +9,7 @@ class Options:
 
 class TestSSLEvidenceExecutor(TestCase):
     def test_verify(self):
-        verified = dict(tls10=True,
+        verified = dict(tls10=False,
                         sslv3=False,
                         tls10weakcipher=False,
                         tls11weakcipher=False,
@@ -19,7 +19,7 @@ class TestSSLEvidenceExecutor(TestCase):
                         tls12heartbleed=False)
 
         options = Options()
-        options.host = "127.0.0.1"
+        options.host = "host"
         options.port = "443"
         options.ssh = "ssh root@localhost"
 
@@ -29,3 +29,4 @@ class TestSSLEvidenceExecutor(TestCase):
 
         executor = SSLEvidenceExecutor(verified=verified, options=options, params=params, result=result)
         executor.verify()
+

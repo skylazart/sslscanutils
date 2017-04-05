@@ -1,0 +1,74 @@
+openssl s_client -tls1_2 -cipher 'ECDHE-RSA-DES-CBC3-SHA' -connect srvappashom02.br-atacadao.corp:443
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:/C=BR/O=Carrefour Atacadao/OU=75315333000109/CN=srvappashom02.br-atacadao.corp
+   i:/C=BR/O=Carrefour Atacadao/OU=75315333000109/CN=Carrefour Atacadao Certification Authority 2016
+ 1 s:/C=BR/O=Carrefour Atacadao/OU=75315333000109/CN=Carrefour Atacadao Certification Authority 2016
+   i:/C=FR/O=Carrefour Management/OU=40324506100045/CN=Carrefour Root Certification Authority 2016
+ 2 s:/C=FR/O=Carrefour Management/OU=40324506100045/CN=Carrefour Root Certification Authority 2016
+   i:/C=FR/O=Carrefour Management/OU=40324506100045/CN=Carrefour Root Certification Authority 2016
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIGWDCCBECgAwIBAgIMVAu0pl7sTZ9TXMdFMA0GCSqGSIb3DQEBCwUAMH0xCzAJ
+BgNVBAYTAkJSMRswGQYDVQQKDBJDYXJyZWZvdXIgQXRhY2FkYW8xFzAVBgNVBAsM
+Djc1MzE1MzMzMDAwMTA5MTgwNgYDVQQDDC9DYXJyZWZvdXIgQXRhY2FkYW8gQ2Vy
+dGlmaWNhdGlvbiBBdXRob3JpdHkgMjAxNjAeFw0xNzAxMTkxMDI4NDZaFw0yMDAx
+MjAxMDI4NDZaMGwxCzAJBgNVBAYTAkJSMRswGQYDVQQKDBJDYXJyZWZvdXIgQXRh
+Y2FkYW8xFzAVBgNVBAsMDjc1MzE1MzMzMDAwMTA5MScwJQYDVQQDDB5zcnZhcHBh
+c2hvbTAyLmJyLWF0YWNhZGFvLmNvcnAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCMTFr+ZbqcmEB4DOypZCcknjH7w3xnNxdfvlD/yzPsA5PC9jHP1FMm
+GyPKUcdILu9SL+ibLDh8EZT2jrzgEbdHyK+YpG39lIXiyfbnawqTR4K22BBxHzbr
+a7R0oNeVRcpH5i+seolr3oib9Vo7X8gSpUpM2cNW+Ig3SPLl4PBU7z9A91VqsUPl
+YQCtMzx49P4KEGEdRu1aL4S+Wpgww7xYYwxz75e9qfX8EtpLp/GMzKtTLqbwKSkb
+xDQmAPRPKt/Nk54DsB5Ia0mOXNJqMQKAqS1EwpWD76b2jpaat+9CogTVOZYm+j++
+uwGTijNmHip1S7fPIZQ1e0Z7dqMxzjVXAgMBAAGjggHnMIIB4zAdBgNVHQ4EFgQU
+7dLGWVwGCBnno0fNcZE3OEH1aMcwHwYDVR0jBBgwFoAUn9/gGLMVamT+nUHDBsMk
+v+0KHWEwgaAGA1UdIASBmDCBlTCBkgYIKoF6AYFLAwMwgYUwgYIGCCsGAQUFBwIB
+FnZodHRwOi8vcGtpLWNwcy5jYXJyZWZvdXIuY29tL0NhcnJlZm91cl9BdGFjYWRh
+b19DZXJ0aWZpY2F0aW9uX0F1dGhvcml0eV8yMDE2X0NlcnRpZmljYXRpb25fUHJh
+Y3RpY2VfU3RhdGVtZW50X3YxLjAucGRmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggr
+BgEFBQcDATAOBgNVHQ8BAf8EBAMCBaAwYQYDVR0fBFowWDBWoFSgUoZQaHR0cDov
+L3BraS1jcmwuY2FycmVmb3VyLmNvbS9DYXJyZWZvdXJfQXRhY2FkYW9fQ2VydGlm
+aWNhdGlvbl9BdXRob3JpdHlfMjAxNi5jcmwwbAYIKwYBBQUHAQEEYDBeMFwGCCsG
+AQUFBzAChlBodHRwOi8vcGtpLWFpYS5jYXJyZWZvdXIuY29tL0NhcnJlZm91cl9B
+dGFjYWRhb19DZXJ0aWZpY2F0aW9uX0F1dGhvcml0eV8yMDE2LmNydDANBgkqhkiG
+9w0BAQsFAAOCAgEAH/g6xpKaySeyStpJrukD3qLYlIfiPcWx1NcNMeBO5IsLHOvq
+QL1WOtq2SeSvweEKHyKfqG6odTTrKXLfh1vkA4m9OsyTywFr+XCHsoqg0cZpPSHP
+y16ELv9Xe+1N49RCcnCJUsosJesh1KmA67kloOVVD44fOHr4o4aoWOjaxFDhRWZo
+l2ZGdYi4WRoOv+qP0QgSFdPeyxwCXKoz9MDd1MfbM9NApji3EX5vraRX2V5tlsV1
+8szMKcZRpdDCvkSIBH4U52zo3LNSyKVYycTkdChM3Ly+oDMwg/CRsgBpVZNzKOim
+GlLgiEBl8bWNrZBQ5I4Lws0OYhWnzXVDzce6y+/f4KscPZQiNC+d+Mt9hQ+lM9+U
+vfu4k4Rpg1q+G8OcmilkHO89f3SBFIVLos3R73ReF+LnwV4bShuGtHfTK/Y1Du0Y
+mhJgHtlpTRbZ+8IhibDb5OwbuIT9zk+z9oviI6uMDLJIAKCTj1I75RibhPRicyIl
+YkJafCd38n/ym7RBuOkIiB0HKKIg2H+sIT4AoTC1MbFNH13JsWH7VbslSqnaOxIW
+DfNoqvrFPh+GZyGXuKfiWeTO6MHyDmtz7pVMXdRlimZQbYHsQnQo9Qv/z4lDrp2S
+W2t4a+pA5AUaI4KC2UZFXuB6I2pu5YqG/hYP62RDLtAuq8qSCzLVRLRiyaU=
+-----END CERTIFICATE-----
+subject=/C=BR/O=Carrefour Atacadao/OU=75315333000109/CN=srvappashom02.br-atacadao.corp
+issuer=/C=BR/O=Carrefour Atacadao/OU=75315333000109/CN=Carrefour Atacadao Certification Authority 2016
+---
+No client certificate CA names sent
+---
+SSL handshake has read 5747 bytes and written 380 bytes
+---
+New, TLSv1/SSLv3, Cipher is ECDHE-RSA-DES-CBC3-SHA
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-DES-CBC3-SHA
+    Session-ID: 58E3AF4844CE13C726CBFEF61A96BE21AD505C94DB1AE197031E86E68F0D5494
+    Session-ID-ctx:
+    Master-Key: AE1A85210B3E025EBA54263C48A16E8AF6673910267B8F53A1BD00FFF7E9EDC98BBAAB2745118A249BAF99573112A2AB
+    Key-Arg   : None
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    Start Time: 1491316438
+    Timeout   : 7200 (sec)
+    Verify return code: 19 (self signed certificate in certificate chain)
+---

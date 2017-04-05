@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan results</title>
+    <link rel="stylesheet" type="text/css"
+          href="data:text/css;base64,KiB7Ym94LXNpemluZzogYm9yZGVyLWJveH0KYm9keSB7Zm9udC1mYW1pbHk6ICJWIiwgbW9ub3NwYWNlOyBmb250LXNpemU6IDEycHg7fQoKLyogU3R5bGUgdGhlIHRhYiAqLwpkaXYudGFiIHsKICAgIGZsb2F0OiBsZWZ0OwogICAgYm9yZGVyOiAxcHggc29saWQgI2NjYzsKICAgIGJhY2tncm91bmQtY29sb3I6ICNmMWYxZjE7CiAgICB3aWR0aDogMjAlOwogICAgbWluLXdpZHRoOiAyMCU7CiAgICBoZWlnaHQ6IDEwMCU7Cn0KCi8qIFN0eWxlIHRoZSBidXR0b25zIGluc2lkZSB0aGUgdGFiICovCmRpdi50YWIgYnV0dG9uIHsKICAgIGRpc3BsYXk6IGJsb2NrOwogICAgYmFja2dyb3VuZC1jb2xvcjogaW5oZXJpdDsKICAgIGNvbG9yOiBibGFjazsKICAgIHBhZGRpbmc6IDEwcHggMTZweDsKICAgIHdpZHRoOiAxMDAlOwogICAgYm9yZGVyOiBub25lOwogICAgb3V0bGluZTogbm9uZTsKICAgIHRleHQtYWxpZ246IGxlZnQ7CiAgICBjdXJzb3I6IHBvaW50ZXI7CiAgICB0cmFuc2l0aW9uOiAwLjNzOwogICAgZm9udC1zaXplOiAxNHB4Owp9CgovKiBDaGFuZ2UgYmFja2dyb3VuZCBjb2xvciBvZiBidXR0b25zIG9uIGhvdmVyICovCmRpdi50YWIgYnV0dG9uOmhvdmVyIHsKICAgIGJhY2tncm91bmQtY29sb3I6ICNkZGQ7Cn0KCi8qIENyZWF0ZSBhbiBhY3RpdmUvY3VycmVudCAidGFiIGJ1dHRvbiIgY2xhc3MgKi8KZGl2LnRhYiBidXR0b24uYWN0aXZlIHsKICAgIGJhY2tncm91bmQtY29sb3I6ICNjY2M7Cn0KCi8qIFN0eWxlIHRoZSB0YWIgY29udGVudCAqLwoudGFiY29udGVudCB7CiAgICBmbG9hdDogbGVmdDsKICAgIHBhZGRpbmc6IDBweCAxMnB4OwogICAgYm9yZGVyOiAxcHggc29saWQgI2NjYzsKICAgIHdpZHRoOiA3MCU7CiAgICBoZWlnaHQ6IDEwMCU7Cn0KCiN0aXRsZSB7CiAgICBmb250LXNpemU6IDE2cHg7Cn0=">
+</head>
+<body>
+<script src="data:text/javascript;base64,ZnVuY3Rpb24gb3BlbkNpdHkoZXZ0LCBjaXR5TmFtZSkgewogICAgdmFyIGksIHRhYmNvbnRlbnQsIHRhYmxpbmtzOwogICAgdGFiY29udGVudCA9IGRvY3VtZW50LmdldEVsZW1lbnRzQnlDbGFzc05hbWUoInRhYmNvbnRlbnQiKTsKICAgIGZvciAoaSA9IDA7IGkgPCB0YWJjb250ZW50Lmxlbmd0aDsgaSsrKSB7CiAgICAgICAgdGFiY29udGVudFtpXS5zdHlsZS5kaXNwbGF5ID0gIm5vbmUiOwogICAgfQogICAgdGFibGlua3MgPSBkb2N1bWVudC5nZXRFbGVtZW50c0J5Q2xhc3NOYW1lKCJ0YWJsaW5rcyIpOwogICAgZm9yIChpID0gMDsgaSA8IHRhYmxpbmtzLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgdGFibGlua3NbaV0uY2xhc3NOYW1lID0gdGFibGlua3NbaV0uY2xhc3NOYW1lLnJlcGxhY2UoIiBhY3RpdmUiLCAiIik7CiAgICB9CiAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChjaXR5TmFtZSkuc3R5bGUuZGlzcGxheSA9ICJibG9jayI7CiAgICBldnQuY3VycmVudFRhcmdldC5jbGFzc05hbWUgKz0gIiBhY3RpdmUiOwp9Cg==
+"></script>
+
+<p id="title">Scan results against <b>{host}</b></p>
+<div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'Target')" id="defaultOpen">Target</button>
+    {BUTTON_SECTIONS}
+</div>
+
+<div id="Target" class="tabcontent">
+    <h3>Target</h3>
+    <p>Host: {host}</p>
+    <p>Port: {port}</p>
+    <p>Additional information: {additional_info}</p>
+</div>
+
+{DIV_SECTIONS}
+
+<script>
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+
+</body>
+</html>
