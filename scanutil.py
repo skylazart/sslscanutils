@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 from optparse import OptionParser
 import sys
 from subprocess import Popen, PIPE
@@ -10,7 +9,8 @@ import gzip
 import base64
 import uuid
 
-SSL_SCAN_COMMAND = "sslscan {host}:{port}"
+"""scanutil.py: Utility to help generating evidences for basic SSL stuff"""
+__author__ = 'Felipe Cerqueira - FSantos@trustwave.com'
 
 
 class Finding:
@@ -60,10 +60,14 @@ class Report:
         self._host = host
         self._port = port
         self._finding_list = []
+        self._additional_info = ''
 
     def add_finding(self, short_desc, desc, evidence_content):
         finding = Finding(short_desc, desc, evidence_content.replace('\n', '<br>\n'))
         self._finding_list.append(finding)
+
+    def set_additional_info(self, additional_info):
+        self._additional_info = additional_info
 
     def generate_report(self, filename):
         html_report = gzip.GzipFile(fileobj=StringIO(base64.decodestring(self.HTML_REPORT))).read()
@@ -76,7 +80,7 @@ class Report:
             divs += self.DIV_FORMAT.format(id=finding.id, short_desc=finding.short_desc, desc=finding.desc,
                                            evidence=finding.evidence_content) + "\n"
 
-        report = html_report.format(host=self._host, port=self._port, additional_info='Port 80 found',
+        report = html_report.format(host=self._host, port=self._port, additional_info=self._additional_info,
                                     BUTTON_SECTIONS=buttons, DIV_SECTIONS=divs)
         f = open(filename, 'w')
         f.write(report)
@@ -117,6 +121,9 @@ class SSLEvidenceExecutor:
         self._verify()
 
     def _verify(self):
+        if self._check['sslv3']:
+            self._test_sslv3()
+
         if self._check['tls10']:
             self._test_tls1()
 
@@ -129,9 +136,17 @@ class SSLEvidenceExecutor:
         if self._check['tls12weakcipher']:
             self._test_weak_cipher("tls1_2", self._check['tls12weakcipher_list'])
 
-        self._test_renegotiation_self_signed()
+        self._test_renegotiation_self_signed_wildcard()
+        self._test_http_redirect()
+        self._test_hsts()
 
-        self._report.generate_report('output.html')
+        self._report.generate_report(self._options.output)
+
+    def _test_sslv3(self):
+        cmd_template = self._create_cmd("openssl s_client -connect {host}:{port} -ssl3")
+        title, evidence = execute_cmd("Evidence SSLv3 is enabled on {host} port {port}:".format(**self._params),
+                                      cmd_template)
+        self._report.add_finding("SSLv3 Enabled", title, evidence)
 
     def _test_tls1(self):
         cmd_template = self._create_cmd("openssl s_client -tls1 -connect {host}:{port}")
@@ -168,11 +183,21 @@ class SSLEvidenceExecutor:
 
         return cmd.format(**self._params)
 
-    def _test_renegotiation_self_signed(self):
+    def _test_renegotiation_self_signed_wildcard(self):
         cmd_template = self._create_cmd("openssl s_client -connect {host}:{port}")
         title = "Testing if secure renegotiation is supported on {host} port {port}:"
 
         title, result = execute_cmd(title.format(**self._params), cmd_template)
+
+        if result.find('CN=*.') > 0:
+            self._report.add_finding("Wildcard SSL Certificate in Use",
+                                     "Evidence demonstrating using CN wildcard in the SSL certificate on {host} port "
+                                     "{port}: ".format(**self._params), result)
+
+        if result.find('verify error:num=19:self signed certificate in certificate chain'):
+            self._report.add_finding("Self Signed Certificate",
+                                     "Evidence demonstrating a self signed certificate on {host} port {port}:".
+                                     format(**self._params), result)
 
         idx = result.find('RENEGOTIATING')
         if idx > 0 and result.find('handshake failure', idx, len(result)) < 0 and result.find('verify return:0', idx,
@@ -181,10 +206,69 @@ class SSLEvidenceExecutor:
                                      "Evidence showing the secure renegotiation supported on {host} port {port}:"
                                      .format(**self._params), result)
 
-            if 'Verify return code: 19 (self signed certificate in certificate chain)' in result:
-                self._report.add_finding("Self Signed Certificate",
-                                         "Evidence demonstrating a self signed certificate on {host} port {port}:".
-                                         format(**self._params), result)
+    def _test_http_redirect(self):
+        cmd_template = self._create_cmd("curl -Ivs http://{host}")
+        title = "Testing if HTTP is available {host} port 80:"
+
+        title, result = execute_cmd(title.format(**self._params), cmd_template)
+        redirect = False
+        rows = result.split('\n')
+        request_evidence = "Request:\n\n"
+        response_evidence = "Response:\n\n"
+
+        if "* Connected to" not in result:
+            return
+
+        self._report.set_additional_info("HTTP port 80 is accepting connections")
+
+        for row in rows:
+            if len(row) == 0:
+                continue
+
+            if row[0] == '>':
+                request_evidence += row[2:] + '\n'
+            if row[0] == '<':
+                response_evidence += row[2:] + '\n'
+                if 'HTTP/1.1 302' in row or 'HTTP/1.0 302' in row:
+                    redirect = True
+
+        evidence = request_evidence + response_evidence
+        if redirect:
+            self._report.add_finding("HTTP Supported With Immediate Redirection",
+                                     "Evidence with immediate HTTP redirection when receive requests on {host} port 80:"
+                                     .format(**self._params), evidence)
+        else:
+            self._report.add_finding("Insecure HTTP Connection Available",
+                                     "Evidence showing server accepting insecure connection on {host} port 80:"
+                                     .format(**self._params), evidence)
+
+    def _test_hsts(self):
+        cmd_template = self._create_cmd("curl -Iksv https://{host}:{port}")
+        title = "Testing if HSTS header is in place {host} port {port}:"
+
+        title, result = execute_cmd(title.format(**self._params), cmd_template)
+        rows = result.split('\n')
+        request_evidence = "Request:\n\n"
+        response_evidence = "Response:\n\n"
+
+        for row in rows:
+            if len(row) == 0:
+                continue
+            if row[0] == '>':
+                request_evidence += row[2:] + '\n'
+            if row[0] == '<':
+                response_evidence += row[2:] + '\n'
+
+        evidence = request_evidence + response_evidence
+
+        if 'Strict-Transport-Security' not in response_evidence:
+                self._report.add_finding("Strict Transport Security (HSTS) Not Enforced",
+                                         "Evidence showing no HSTS header in place on {host} port {port}:"
+                                         .format(**self._params), evidence)
+
+
+# SSLScan syntax formatter
+SSL_SCAN_COMMAND = "sslscan {host}:{port}"
 
 
 def run_ssl_scan(params, options):
@@ -194,7 +278,6 @@ def run_ssl_scan(params, options):
     :param options: Command line arguments
     :return: output string
     """
-
     if options.ssh is not None:
         cmd_template = "%s %s" % (options.ssh, SSL_SCAN_COMMAND)
     else:
@@ -220,6 +303,7 @@ def filter_result(result):
                                   .replace('[1;34m', '')
                                   .replace('[32m', '')
                                   .replace('[33m', '')
+                                  .replace('[31m', '')
                                   .replace('[0m', '')
                                   .strip()), result)
     return result
@@ -287,6 +371,9 @@ def parse_result(params, options, result):
                     # Saving the cipher name
                     verified['tls12weakcipher_list'].add(splited[4])
 
+            if 'SSLv3' in l:
+                verified['sslv3'] = True
+
             if 'TLSv1.0' in l:
                 verified['tls10'] = True
 
@@ -321,6 +408,10 @@ def main(argv):
     parser.add_option("-S", "--ssh", dest="ssh",
                       help="Format: 'ssh user@host'")
 
+    parser.add_option("-O", "--output", dest="output",
+                      help="Format: report.html")
+
+    parser.set_defaults(output='output.html')
     (options, args) = parser.parse_args()
 
     if options.host is None or options.port is None:
@@ -330,6 +421,8 @@ def main(argv):
     params = dict(host=options.host, port=options.port)
 
     print "Starting sslscan against %s:%s" % (options.host, options.port)
+    print "Output result: %s" % options.output
+
     result = run_ssl_scan(params, options)
     for l in result:
         print l,

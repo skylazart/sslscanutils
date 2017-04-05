@@ -19,9 +19,10 @@ class TestSSLEvidenceExecutor(TestCase):
                         tls12heartbleed=False)
 
         options = Options()
-        options.host = "host"
-        options.port = "443"
-        options.ssh = "ssh root@localhost"
+        options.host = 'host'
+        options.port = '443'
+        options.ssh = 'ssh root@kali'
+        options.output = 'temp.html'
 
         params = dict(host=options.host, port=options.port)
 
