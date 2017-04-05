@@ -430,18 +430,44 @@ def main(argv):
     parser.add_option("-O", "--output", dest="output",
                       help="Format: report.html")
 
+    parser.add_option("-I", "--input", dest="input",
+                      help="Format: file containing lines host:port:path_to_report.html")
+
     parser.set_defaults(output='output.html')
     (options, args) = parser.parse_args()
 
-    if options.host is None or options.port is None:
-        print "%s -h for help" % argv[0]
+    if options.input is None:
+        if options.host is None or options.port is None:
+            print "%s -h for help" % argv[0]
+            return
+
+    if options.host is not None and options.port is not None:
+        start_scan(options)
         return
 
+    saved_output_files = []
+
+    assert isinstance(options.input, str)
+    input_file = open(options.input, mode='r')
+    for line in input_file.readlines():
+        host, port, output = line.strip().split(':')
+        options.host = host
+        options.port = port
+        options.output = output
+
+        start_scan(options=options)
+
+        saved_output_files.append(output)
+
+    print "--> Batch test concluded"
+    for output in saved_output_files:
+        print "-> Output: %s" % output
+
+
+def start_scan(options):
     params = dict(host=options.host, port=options.port)
-
-    print "Starting sslscan against %s:%s" % (options.host, options.port)
-    print "Output result: %s" % options.output
-
+    print "--> Starting sslscan against %s:%s" % (options.host, options.port)
+    print "-> Output result: %s" % options.output
     result = run_ssl_scan(params, options)
     for l in result:
         print l,
@@ -450,8 +476,7 @@ def main(argv):
     result = filter_result(result)
     verified = parse_result(params, options, result)
     generate_evidences(params=params, options=options, result=result, verified=verified)
-
-    print "Check out the report output: %s" % options.output
+    print "-> Check out the report output: %s" % options.output
 
 
 if __name__ == '__main__':
