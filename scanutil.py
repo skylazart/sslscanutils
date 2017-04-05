@@ -32,29 +32,33 @@ class Finding:
 
 class Report:
     # Variable containing the HTML report layout compressed and encoded in base64
-    HTML_REPORT = 'H4sIAKcc5FgAA5VWW5OaShB+91dwfElSlRNZXbNrolYJroAXXK8IL6kZIDA6XCKDiqn899MDi7onlZMcX5Dp6Z6vv/66mfZf/' \
-                  'am8NJ+fBJ8FtFtp84dAUeh1qm5Y5QsucroVAX7twGVIsH20T1zWqa6Wg78fqy8mRhh1uwsbhcLeTVLKknatWCvslIQ7sNBONW' \
-                  'EZdRPfdVlVYFnsdqrMPbGanSTVfGvx8/fu107VQQx9Ks2fMUrcj/fvR0R6MIPW/Xijx25AU+scefCeWco6GxvDg6uKI3jfuQv' \
-                  'pwQpaqSPfBaZxF2N191GTh4ZGjh42Wilu6EfT0Ok0kwJcb4pFvNVHrf+U2ar38HUWjcZZ5K0a8yZWVp6j+FRT575Jet/Gx3iH' \
-                  'NmbqKAOiqclIk3ueplgJrg/EKZESy7DE6THy+HqJbUp6J4jr2fVWgoyZp9X1rXkufYe+WWehHbTucDBjJuzBDQ3w6sHEME/W9' \
-                  'ulBJrBPlhrImIuoH3mTbY+WZ2CDpuONE1vqPIJzsom8KvdHlkFDpM54Xsd8PRRHMnn8pg100TVOPKfIWkjE2cxF4OGsKTS163' \
-                  'QHayLK84Yc5eggB/PYIU3RNDTPDNeio7TSa+7z2G5IibkBjpUh8KDvr/kPtqjuZLixTi35bovrp4O9jTxkNCNrM4ydfhlDP2C' \
-                  'lBTxJBCvgU3KjSr4F8XFg5zlwDidL6+iWfuol79Okf+XkyruUQl5XrhprEUOO1jLyMOjDWpZx5tRVgXvjFFv1e8jjRK1wVvK4' \
-                  'dTbDc14TVToAdtHaaKVNtIMB50xEoCvAcRxv9XN53osGz2gTU45RV6X76TFuyV50AC33kTJIrfrqXzxJBU9EOljktjbAueIfn' \
-                  'GCd/aom0+DFrv5WWztLmV318KRnljEQoe4+JpJvNiB2sDqYjXVmB2vIoUdyLSjDO0edHzCBM+sn325MvBF5HFkKrY9D3h8l3v' \
-                  'sU+ktEG4v+AZatWZ/8SptFfnXgUclxQP9Fee9d16SyFgFoyHegP7CyDi7aeqUh6ejKoJWQ1+F/9OhVZ43f9xfPe54A9iuu1zO' \
-                  'mzmcM7O3wIVsrpmwbR04Gj8Tek5gJyd6+nYFbdECFpRyFVrhOeZmAapC1RPFOjx11B21liWOQEEBoLoMBsxY7z31J1QkGmabs' \
-                  'knyUBdBy4ZzicPbyfgKK2EW6rynutaDNuRyYBfIfBw51ntYw6u7Af36ehbQPbXu2xaaPjVWkha/ik9HyMiZB1r0ILSBev/cAW' \
-                  'LxnmZd4uOUUFbFPFAcOjLnEQ4tkP7rQ2PsZ14DFm0Xz7KgU6G7CWNaPgKOp9UVPC5oHHKxImQ+M9Is/HwEIpPu8kHYwru6wwX' \
-                  'NshtZmPgDp5Dna4rA5yyWuT+ETQkfykOMEaTT3dqbFNy0O7ejH/MxJjrn3eMvnn+RT4NExWoupeXMmj/lf9nE4pLZygrYCzq9' \
-                  'tS8bQrhrZlfJrvTx/mSvUb2jJ/q1mUrv49KXQ2md+hstrJg8BS2uLssv4o044Sy9jYjD3ba4Nubm90YM3OkM9bvAVI7DTqVS7' \
-                  '7Voh626l0o4F4sCVgF8dqq/uEwLyEAkTJrRx97sfJexHu4bBNYZ+cchBsClKEvBEuLyT4JSxKLwx8EtIUhWi0KbE3nWqUeyGM' \
-                  'mHZW/fghuy98GaJ9p7L3ryr5iAc9yuCk6cxvwgVJjgyD1qc8F1aLZdT/cviSV5qU33xAxoZoPA0OCIeo3Cr3oCwo5DBaSVIv3' \
-                  'EJDX+LtbirQn6fhDLN+LL+HO35egyPV+s9xyGMRCGiAgm/RvsA8TfYiS6GL9xQOJUov/e19Q34cu50K7WaoLhMYL4ruNQNAK5' \
-                  'wJMz/iRUBhY6QkwmkCoRVnMhO+fYPkNBT4SllmvP2lde7D7nL23efK7eVr70Mv1p+E/0Hk8W+hpkKAAA='
+    HTML_REPORT = 'H4sIABY75VgAA41WW2/aShB+z6/w4aWt1FMMxGlpSSQwwZhrMBdjv1R7cXzBN+E1YKr+9zNrx+C0TXWQ' \
+                  'kPHOzuw3M983bOef/lxeGU+PgsMC/+Gmwx+Cj0L7vmaFNb5gIfpwI8CnE1gMCcRB+8Ri97X1avDvl9qL' \
+                  'ibnMtx6WBIXC3kpSnyWderFW2H033IHFv68lLPOtxLEsVhNYFlv3NWadWJ0kSS3fWnycvfV8X6OIoa+l' \
+                  '+RtGiXV3+3Hs9j7LbtdW5Z6LWzYjTf8O6VI4d/n7aGduVWYE7Vs5FMdyMDqYw51tHSPY37XNoJ1SuREY' \
+                  'eiPGw92dKo901T3aWG+nuDU7GvrMn7/ee0bb2J+73dM07N3Oj3FbtuMd2hopVQauOkzGfK+qmAluDkTA' \
+                  'kJi6KZYxAEdmKpuM+5OhbZNmO0H6wlabM884l74jx2iykATtBg4WzIA9uKUCtlkw1Y2T6T2W+baQromo' \
+                  'H9lTr3vBiXU/nWxpbA61CM7JpvK63B+Zuh+i4eJO7T8e8/W8JlpMXUk0dNU2wo1IlXZ6zUOLSauXGFuo' \
+                  'jTKCnGb7ay4DDzVphlub1JQbHm6eDsSLbKh9ZG5HMe2XMWYHrLSzvB8K+JR5DnuOCfFxQHI8vB7TlXm0' \
+                  'Sr/hJYfTtH/N71rDXoqb0jXv1kbEip+aq8jG0CtzVcbRfGsIddRPsdm8hTxOvhkuypp4dDs65/Ud9g6A' \
+                  'XQS+lDaRBIMU+CQi4APgOE682fktPsyGf+CDMmrQoXbAXhzhlumTCleBW3uzNTpQXdpN9LJGXQ9qsnsz' \
+                  'jis5Rgv6FawvHH6rDyWnnhfReBJqjhHAGaHm43BR4f/pYGwXv9YEeK/tuIYmW+1AOL/y3Aofogx2Jq9z' \
+                  '1ii4zftTsVc4znv6G1fnlV4iZQM9ccRrj3nekUcVH3q5/lWn11pftBdBf5wDCTXQ+cy78Db/9gLghwha' \
+                  '8JFOIwpnA7bE7P9pzyy2gjXnYSPHzHXhSn+Jedl/ruw/kmATwMxhxlYTTX3xJv5idhQ22nRiqqwZ6Ax0' \
+                  'v+Y8zDh3nxf393zg1ouJ28ERzeCRkL0bMyHZk+o89NABFZZyLJrhJuVUwc1bkEbPxzsTpJbLDeRpihOg' \
+                  'Ptpq0ioYMHN5HYk0GGSqsktANlXKvLyfwJ9dJMCpCeMJKLqB9LptGBcHo7VhJshoElCfPm6AIg3w186L' \
+                  '0O+D/M9ElBysryP1NSXd8eoyOg/E7UZoCfH63c+AxX4CKRr6yOOlL2KffBxQoFNio2WyHy9LWXV/xzVg' \
+                  '8XYpnenQT8ylBJKaHQGHpPZFWw2kAw7WbpkPSOXiz0cJak3tp2VvB2OvgXWeoxSaW22AlSJHIo6kRfPk' \
+                  'kNZsDn8h/lgecZww0qU9ydS4MioyVXZifuY0x9z9Uq3n/8mnwDPDaCOmRuVMHvNv9kk48oly4tSKVLdX' \
+                  'jg93Indd1d2V8my/PN/MFfo3MmWnypmUtDQJZJrCODjzMyzeM3kEWNoeyi5j1KfhAri4yUAe0A/NIZwb' \
+                  'suRV+GCPz9CPCr5C3lwCnXrB7Iebm04suBRuCPwmUXt1vRCQjdwwYUIHP/xwooT97NQxuMYgGeoeBOKj' \
+                  'JAFPhMsrCk4Zi8KKgd9JkpoQhcR3ye6+FsVWOHBD6ob2e+tgheyj8G6F9rbF3n2o5Tio9Yzg8HnMr0aF' \
+                  'CU7N4xaH/OitV6v57PvyUV6p89nyJ8gZ0PBMOCgeo3CrVXCQKGRwWonTaV1Cw89iLX4YQopfhTLT+LL+' \
+                  'FO35egyPV+tdSl3mRiHyBTd8jvYB4m+wE10M37mhcCpR/uirmwr4cvo83NTrgmIxgTmWYPlWAHCFo8uc' \
+                  '36oioJAKeT2hroLLbmhEUr79EyT0WHj2MpW+f+X14VPu8v7Dt5tq8+svI7Ce303/A0O2XaarCgAA'
 
-    BUTTON_FORMAT = """<button class="tablinks" onclick="openCity(event, '{id}')">{short_desc}</button>"""
-    DIV_FORMAT = """<div id="{id}" class="tabcontent"><h3>{short_desc}</h3><p>{desc}</p><p>{evidence}</p></div>"""
+    BUTTON_FORMAT = """<button class="tablinks" onclick="openFinding(event, '{id}')">{short_desc}</button>"""
+    DIV_FORMAT = """<div id="{id}" class="tabcontent"><p class="shortdesc">{short_desc}</p><p class="desc">{desc}</p><p class="preformatted">{evidence}</p></div> """
 
     def __init__(self, host, port):
         self._host = host
@@ -63,7 +67,8 @@ class Report:
         self._additional_info = ''
 
     def add_finding(self, short_desc, desc, evidence_content):
-        finding = Finding(short_desc, desc, evidence_content.replace('\n', '<br>\n'))
+        # finding = Finding(short_desc, desc, evidence_content.replace('\n', '<br>\n'))
+        finding = Finding(short_desc, desc, evidence_content)
         self._finding_list.append(finding)
 
     def set_additional_info(self, additional_info):
@@ -94,7 +99,8 @@ def execute_cmd(title, cmd, renegotiate='R\n'):
 
     f = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     result = f.communicate('R\n')
-    return title, cmd + "\n" + ''.join(result).replace("Kali GNU/Linux 1.0.9\n", '')
+    result = ''.join(result).replace("Kali GNU/Linux 1.0.9\n", '')
+    return title, cmd + "\n" + result
 
 
 class SSLEvidenceExecutor:
@@ -135,6 +141,9 @@ class SSLEvidenceExecutor:
 
         if self._check['tls12weakcipher']:
             self._test_weak_cipher("tls1_2", self._check['tls12weakcipher_list'])
+
+        if self._check['sslv3weakcipher']:
+            self._test_weak_cipher("ssl3", self._check['sslv3weakcipher_list'])
 
         self._test_renegotiation_self_signed_wildcard()
         self._test_http_redirect()
@@ -262,9 +271,9 @@ class SSLEvidenceExecutor:
         evidence = request_evidence + response_evidence
 
         if 'Strict-Transport-Security' not in response_evidence:
-                self._report.add_finding("Strict Transport Security (HSTS) Not Enforced",
-                                         "Evidence showing no HSTS header in place on {host} port {port}:"
-                                         .format(**self._params), evidence)
+            self._report.add_finding("Strict Transport Security (HSTS) Not Enforced",
+                                     "Evidence showing no HSTS header in place on {host} port {port}:"
+                                     .format(**self._params), evidence)
 
 
 # SSLScan syntax formatter
@@ -344,18 +353,23 @@ def parse_result(params, options, result):
                     tls10heartbleed=False,
                     tls11heartbleed=False,
                     tls12heartbleed=False,
+                    sslv3weakcipher=False,
                     tls10weakcipher_list=set(),
                     tls11weakcipher_list=set(),
-                    tls12weakcipher_list=set())
+                    tls12weakcipher_list=set(),
+                    sslv3weakcipher_list=set())
 
     for l in result:
         l = ' '.join(l.split())
 
-        if 'Accepted' in l:
+        if 'Accepted' in l or 'Preferred' in l:
             # Line format: Accepted TLSv1.0 128 bits ECDHE-RSA-AES128-SHA
             splited = l.split()
 
-            if splited[3] == 'bits' and int(splited[2]) < 128:
+            if len(splited) <= 3:
+                continue
+
+            if splited[3] == 'bits' and (int(splited[2]) < 128 or 'RC4' in splited[4]):
                 if 'TLSv1.0' in splited[1]:
                     verified['tls10weakcipher'] = True
                     # Saving the cipher name
@@ -370,6 +384,11 @@ def parse_result(params, options, result):
                     verified['tls12weakcipher'] = True
                     # Saving the cipher name
                     verified['tls12weakcipher_list'].add(splited[4])
+
+                if 'SSLv3' in splited[1]:
+                    verified['sslv3weakcipher'] = True
+                    # Saving the cipher name
+                    verified['sslv3weakcipher_list'].add(splited[4])
 
             if 'SSLv3' in l:
                 verified['sslv3'] = True
@@ -431,6 +450,8 @@ def main(argv):
     result = filter_result(result)
     verified = parse_result(params, options, result)
     generate_evidences(params=params, options=options, result=result, verified=verified)
+
+    print "Check out the report output: %s" % options.output
 
 
 if __name__ == '__main__':

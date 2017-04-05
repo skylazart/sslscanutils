@@ -1,7 +1,12 @@
-* {box-sizing: border-box}
-body {font-family: "V", monospace; font-size: 12px;}
+* {
+    box-sizing: border-box
+}
 
-/* Style the tab */
+body {
+    font-family: "V", monospace;
+    font-size: 12px;
+}
+
 div.tab {
     float: left;
     border: 1px solid #ccc;
@@ -11,7 +16,6 @@ div.tab {
     height: 100%;
 }
 
-/* Style the buttons inside the tab */
 div.tab button {
     display: block;
     background-color: inherit;
@@ -26,25 +30,37 @@ div.tab button {
     font-size: 14px;
 }
 
-/* Change background color of buttons on hover */
 div.tab button:hover {
     background-color: #ddd;
 }
 
-/* Create an active/current "tab button" class */
 div.tab button.active {
     background-color: #ccc;
 }
 
-/* Style the tab content */
 .tabcontent {
     float: left;
-    padding: 0px 12px;
-    border: 1px solid #ccc;
-    width: 70%;
+    padding-top: 0px;
+    padding-left: 10px;
+    border: 0px;
+    width: 80%;
     height: 100%;
 }
 
 #title {
     font-size: 16px;
+}
+
+.shortdesc {
+        font-weight: bold;
+        font-size: 15px;
+}
+
+.desc {
+        font-size: 13px;
+}
+
+.preformatted {
+    font-size: 12px;
+    white-space: pre;
 }
