@@ -57,7 +57,7 @@ or
 
 # Screenshot
 
-![screenshot](https://git.trustwave.com/fsantos/sslscanutil/raw/master/screenshot/scanresult.png?raw=true)
+![screenshot](https://raw.githubusercontent.com/skylazart/sslscanutils/master/screenshot/scanresult.png)
 
 # Status
 
