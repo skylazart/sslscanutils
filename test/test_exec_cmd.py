@@ -5,7 +5,7 @@ from sslscanutil import execute_cmd
 
 class TestCmdExec(TestCase):
     def test_execute_cmd(self):
-        result = execute_cmd('curl -m 10 -ksv http://cobranca.conectaservicos.com.br')
+        result = execute_cmd('curl -m 10 -ksv http://localhost')
 
         request = 'Request:\n'
         response = 'Response:\n'
