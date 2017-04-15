@@ -1,10 +1,11 @@
 from unittest import TestCase
 
-from sslscanutil import SSLEvidenceExecutor
+from sslscanutil import SslEvidenceGenerator
 
 
 class Options:
-    pass
+    def __init__(self):
+        pass
 
 
 class TestSSLEvidenceExecutor(TestCase):
@@ -28,6 +29,6 @@ class TestSSLEvidenceExecutor(TestCase):
 
         result = []
 
-        executor = SSLEvidenceExecutor(verified=verified, options=options, params=params, result=result)
+        executor = SslEvidenceGenerator(verified=verified, options=options, params=params, result=result)
         executor.verify()
 

@@ -1,16 +1,55 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
-import sys
-from subprocess import Popen, PIPE
-import string
-from StringIO import StringIO
-import gzip
 import base64
+import gzip
+import sys
 import uuid
+from StringIO import StringIO
+from optparse import OptionParser
+from subprocess import Popen, PIPE
 
 """sslscanutil.py: Utility to help generating evidences for basic SSL stuff"""
 __author__ = 'Felipe Cerqueira - FSantos@trustwave.com'
+
+
+class TestingCommands:
+    def __init__(self, ssh_cmd, openssl_path, sslscan_path, curl_path, nmap_path):
+        if ssh_cmd is None:
+            ssh_cmd = ''
+        else:
+            ssh_cmd += ' '
+
+        self._openssl_path = ssh_cmd + openssl_path
+        self._sslscan_path = ssh_cmd + sslscan_path
+        self._curl_path = ssh_cmd + curl_path
+        self._nmap_path = ssh_cmd + nmap_path
+
+    def sslscan_command(self):
+        return '%s --no-color {host}:{port}' % self._sslscan_path
+
+    def test_sslv2(self):
+        return '%s s_client -connect {host}:{port} -ssl2' % self._openssl_path
+
+    def test_sslv3(self):
+        return '%s s_client -connect {host}:{port} -ssl3' % self._openssl_path
+
+    def test_tls1(self):
+        return '%s s_client -tls1 -connect {host}:{port}' % self._openssl_path
+
+    def test_weak_cipher(self):
+        return '%s s_client -{tls} -cipher \'{cipher}\' -connect {host}:{port}' % self._openssl_path
+
+    def recon(self):
+        return '%s -T4 -sV --top-ports 25 {host}' % self._nmap_path
+
+    def test_hsts(self):
+        return '%s -ksv https://{host}:{port}' % self._curl_path
+
+    def test_http_redirect(self):
+        return '%s -m 10 -ksv http://{host}' % self._curl_path
+
+    def test_self_signed_renegotiation(self):
+        return '%s s_client -connect {host}:{port}' % self._openssl_path
 
 
 class Finding:
@@ -58,7 +97,8 @@ class Report:
                   '36oioJAKeT2hroLLbmhEUr79EyT0WHj2MpW+f+X14VPu8v7Dt5tq8+svI7Ce303/A0O2XaarCgAA'
 
     BUTTON_FORMAT = """<button class="tablinks" onclick="openFinding(event, '{id}')">{short_desc}</button>"""
-    DIV_FORMAT = """<div id="{id}" class="tabcontent"><p class="shortdesc">{short_desc}</p><p class="desc">{desc}</p><p class="preformatted">{evidence}</p></div> """
+    DIV_FORMAT = """<div id="{id}" class="tabcontent"><p class="shortdesc">{short_desc}</p><p class="desc">{desc}</p>
+    <p class="preformatted">{evidence}</p></div> """
 
     def __init__(self, host, port):
         self._host = host
@@ -92,20 +132,24 @@ class Report:
         f.close()
 
 
-def execute_cmd(title, cmd, renegotiate='R\n'):
-    # type: (str, str, str) -> tuple
-    print "####-> %s" % title
-    print "sending command %s" % cmd
-
+def execute_cmd(cmd, second_cmd=None):
+    # type: (str, str) -> str
     f = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    result = f.communicate('R\n')
+    if second_cmd is None:
+        result = f.communicate()
+    else:
+        result = f.communicate(second_cmd)
+
+    """TODO: Implement a more generic replacement"""
     result = ''.join(result).replace("Kali GNU/Linux 1.0.9\n", '')
-    return title, cmd + "\n" + result
+    return cmd + "\n" + result
 
 
-class SSLEvidenceExecutor:
+class SslEvidenceGenerator:
     def __init__(self, params, options, result, verified):
         """
+        Generate the evidences and check for some findings
+
         :type params dict
         :type result list
         :type verified dict
@@ -121,12 +165,22 @@ class SSLEvidenceExecutor:
         self._result = result
         self._check = verified
         self._report = Report(host=self._params['host'], port=self._params['port'])
+        self._commands = TestingCommands(ssh_cmd=options.ssh, openssl_path=options.openssl_path,
+                                         sslscan_path=options.sslscan_path, curl_path=options.curl_path,
+                                         nmap_path=options.nmap_path)
+
         self._report.add_finding('SSLScan output', 'SSLScan output', '\n'.join(result))
 
     def verify(self):
+        if self._options.enable_recon:
+            self._recon()
+
         self._verify()
 
     def _verify(self):
+        if self._check['sslv2']:
+            self._test_sslv2()
+
         if self._check['sslv3']:
             self._test_sslv3()
 
@@ -151,52 +205,68 @@ class SSLEvidenceExecutor:
 
         self._report.generate_report(self._options.output)
 
+    def _recon(self):
+        title = 'Nmap recon on {host}:'.format(**self._params)
+        cmd = self._commands.recon().format(**self._params)
+
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+        self._report.add_finding('Nmap recon', title, result)
+
+    def _test_sslv2(self):
+        title = 'Evidence SSLv2 is enabled on {host} port {port}:'.format(**self._params)
+        cmd = self._commands.test_sslv2().format(**self._params)
+
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+        self._report.add_finding('SSLv2 Enabled', title, result)
+
     def _test_sslv3(self):
-        cmd_template = self._create_cmd("openssl s_client -connect {host}:{port} -ssl3")
-        title, evidence = execute_cmd("Evidence SSLv3 is enabled on {host} port {port}:".format(**self._params),
-                                      cmd_template)
-        self._report.add_finding("SSLv3 Enabled", title, evidence)
+        title = 'Evidence SSLv3 is enabled on {host} port {port}:'.format(**self._params)
+        cmd = self._commands.test_sslv3().format(**self._params)
+
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+        self._report.add_finding('SSLv3 Enabled', title, result)
 
     def _test_tls1(self):
-        cmd_template = self._create_cmd("openssl s_client -tls1 -connect {host}:{port}")
-        title, evidence = execute_cmd("Evidence TLS1.0 is enabled on {host} port {port}:".format(**self._params),
-                                      cmd_template)
+        title = 'Evidence TLS1.0 is enabled on {host} port {port}:'.format(**self._params)
+        cmd = self._commands.test_tls1().format(**self._params)
 
-        self._report.add_finding("TLS One Enabled", title, evidence)
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+        self._report.add_finding('TLS One Enabled', title, result)
 
     def _test_weak_cipher(self, tls, ciphers):
-        """
-        :type tls str
-        :type ciphers set
-        :param tls: TLS version
-        :param ciphers: set containing the list of weak ciphers
-        :return: None
-        """
+        # type: (str, list) -> None
 
         for cipher in ciphers:
-            cmd_template = self._create_cmd("openssl s_client -%s -cipher '%s' -connect {host}:{port}" % (tls, cipher))
-            title = "Evidence using weak cipher %s (%s) on {host} port {port}:" % (tls, cipher)
-            title, evidence = execute_cmd(title.format(**self._params),
-                                          cmd_template)
-            self._report.add_finding("Weak Cipher %s %s" % (tls, cipher), title, evidence)
+            params_tls_cipher = dict(self._params, tls=tls, cipher=cipher)
+            title = 'Evidence using weak cipher {tls} ({cipher}) on {host} port {port}:'.format(**params_tls_cipher)
+            cmd = self._commands.test_weak_cipher().format(**params_tls_cipher)
 
-    def _create_cmd(self, cmd):
-        """
-        :type cmd str
-        :param cmd: OpenSSL command
-        :return: Command string including the ssh command when necessary
-        """
+            print '## %s' % title
+            print '-> %s' % cmd
 
-        if self._options.ssh is not None:
-            cmd = "%s %s" % (self._options.ssh, cmd)
-
-        return cmd.format(**self._params)
+            result = execute_cmd(cmd)
+            self._report.add_finding("Weak Cipher %s %s" % (tls, cipher), title, result)
 
     def _test_renegotiation_self_signed_wildcard(self):
-        cmd_template = self._create_cmd("openssl s_client -connect {host}:{port}")
-        title = "Testing if secure renegotiation is supported on {host} port {port}:"
+        title = 'Testing if secure renegotiation is supported on {host} port {port}:'.format(**self._params)
+        cmd = self._commands.test_self_signed_renegotiation().format(**self._params)
 
-        title, result = execute_cmd(title.format(**self._params), cmd_template)
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd, 'R\n')
 
         if result.find('CN=*.') > 0:
             self._report.add_finding("Wildcard SSL Certificate in Use",
@@ -216,19 +286,29 @@ class SSLEvidenceExecutor:
                                      .format(**self._params), result)
 
     def _test_http_redirect(self):
-        cmd_template = self._create_cmd("curl -Ivs http://{host}")
-        title = "Testing if HTTP is available {host} port 80:"
+        title = 'Testing if HTTP is responding on {host} port 80:'.format(**self._params)
+        cmd = self._commands.test_http_redirect().format(**self._params)
 
-        title, result = execute_cmd(title.format(**self._params), cmd_template)
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+
         redirect = False
-        rows = result.split('\n')
-        request_evidence = "Request:\n\n"
-        response_evidence = "Response:\n\n"
 
-        if "* Connected to" not in result:
+        if 'Operation timed out' in result:
             return
 
-        self._report.set_additional_info("HTTP port 80 is accepting connections")
+        if '< HTTP/1.1' not in result and '< HTTP/1.0' not in result:
+            return
+
+        idx_begin_request = result.find('GET /')
+        if idx_begin_request < 0:
+            return
+
+        rows = result[idx_begin_request:].split('\r\n')
+        request_evidence = "Request:\n\n"
+        response_evidence = "Response:\n\n"
 
         for row in rows:
             if len(row) == 0:
@@ -236,12 +316,22 @@ class SSLEvidenceExecutor:
 
             if row[0] == '>':
                 request_evidence += row[2:] + '\n'
+                continue
+
             if row[0] == '<':
                 response_evidence += row[2:] + '\n'
-                if 'HTTP/1.1 302' in row or 'HTTP/1.0 302' in row:
-                    redirect = True
+                continue
 
-        evidence = request_evidence + response_evidence
+            if row.find('GET') == 0:
+                request_evidence += row + '\n'
+
+        evidence = '<pre>' + request_evidence + response_evidence + '</pre>'
+
+        if 'HTTP/1.1 302' in evidence and 'Location' in evidence:
+            redirect = True
+
+        self._report.set_additional_info('HTTP port 80 is accepting connections')
+
         if redirect:
             self._report.add_finding("HTTP Supported With Immediate Redirection",
                                      "Evidence with immediate HTTP redirection when receive requests on {host} port 80:"
@@ -252,23 +342,40 @@ class SSLEvidenceExecutor:
                                      .format(**self._params), evidence)
 
     def _test_hsts(self):
-        cmd_template = self._create_cmd("curl -Iksv https://{host}:{port}")
-        title = "Testing if HSTS header is in place {host} port {port}:"
+        title = 'Testing if HSTS header is in place {host} port {port}:'.format(**self._params)
+        cmd = self._commands.test_hsts().format(**self._params)
 
-        title, result = execute_cmd(title.format(**self._params), cmd_template)
-        rows = result.split('\n')
+        print '## %s' % title
+        print '-> %s' % cmd
+
+        result = execute_cmd(cmd)
+        request = 'Request:\n'
+        response = 'Response:\n'
+
+        idx_begin_request = result.find('GET /')
+        if idx_begin_request < 0:
+            return
+
+        rows = result[idx_begin_request:].split('\r\n')
         request_evidence = "Request:\n\n"
         response_evidence = "Response:\n\n"
 
         for row in rows:
             if len(row) == 0:
                 continue
+
             if row[0] == '>':
                 request_evidence += row[2:] + '\n'
+                continue
+
             if row[0] == '<':
                 response_evidence += row[2:] + '\n'
+                continue
 
-        evidence = request_evidence + response_evidence
+            if row.find('GET') == 0:
+                request_evidence += row + '\n'
+
+        evidence = '<pre>' + request_evidence + response_evidence + '</pre>'
 
         if 'Strict-Transport-Security' not in response_evidence:
             self._report.add_finding("Strict Transport Security (HSTS) Not Enforced",
@@ -276,50 +383,10 @@ class SSLEvidenceExecutor:
                                      .format(**self._params), evidence)
 
 
-# SSLScan syntax formatter
-SSL_SCAN_COMMAND = "sslscan {host}:{port}"
-
-
-def run_ssl_scan(params, options):
-    """
-    :type params dict
-    :param params: Dictionary containing the key/value pairs to compose the sslscan command
-    :param options: Command line arguments
-    :return: output string
-    """
-    if options.ssh is not None:
-        cmd_template = "%s %s" % (options.ssh, SSL_SCAN_COMMAND)
-    else:
-        cmd_template = SSL_SCAN_COMMAND
-
-    cmd = cmd_template.format(**params)
-
-    f = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, stdin=PIPE)
-    result = f.stdout.readlines()
-
-    return result
-
-
-def filter_result(result):
-    """
-    :type result list
-    :param result: List containing the output lines of sslscan
-    :return: filtered result (for nonprintable characters and color formatting strings
-    """
-
-    result = map(lambda s: filter(lambda x: x in string.printable,
-                                  s.replace('[32m128[0m', '')
-                                  .replace('[1;34m', '')
-                                  .replace('[32m', '')
-                                  .replace('[33m', '')
-                                  .replace('[31m', '')
-                                  .replace('[0m', '')
-                                  .strip()), result)
-    return result
-
-
 def generate_evidences(params, options, result, verified):
     """
+    Generate evidences using the sslscan output and do some more checks
+
     :type params dict
     :type result list
     :type verified dict
@@ -331,21 +398,21 @@ def generate_evidences(params, options, result, verified):
     :return: None
     """
 
-    f = SSLEvidenceExecutor(params=params, options=options, result=result, verified=verified)
+    f = SslEvidenceGenerator(params=params, options=options, result=result, verified=verified)
     f.verify()
 
 
-def parse_result(params, options, result):
+def parse_result(result):
     """
-    :type params dict
+    Parse the sslscan output and fill a dict for each finding found
+
     :type result list
-    :param params: Dictionary containing the key/value pairs to compose the sslscan command
-    :param options: Command line arguments
     :param result: Output result of sslscan
     :return: Dictionary containing the vulnerabilities
     """
 
     verified = dict(tls10=False,
+                    sslv2=False,
                     sslv3=False,
                     tls10weakcipher=False,
                     tls11weakcipher=False,
@@ -393,6 +460,9 @@ def parse_result(params, options, result):
             if 'SSLv3' in l:
                 verified['sslv3'] = True
 
+            if 'SSLv2' in l:
+                verified['sslv2'] = True
+
             if 'TLSv1.0' in l:
                 verified['tls10'] = True
 
@@ -405,7 +475,7 @@ def parse_result(params, options, result):
                 if 'TLS 1.2' in l:
                     verified['tls12heartbleed'] = True
 
-    print 'SSL Findings so far:'
+    print '-> SSL findings identified so far:'
     for k in verified.keys():
         v = verified[k]
         if type(v) == bool:
@@ -413,6 +483,7 @@ def parse_result(params, options, result):
         elif type(v) == set:
             print "K: %s V: %s" % (k, ', '.join(cipher for cipher in v))
 
+    print ''
     return verified
 
 
@@ -427,14 +498,32 @@ def main(argv):
     parser.add_option("-S", "--ssh", dest="ssh",
                       help="Format: 'ssh user@host'")
 
-    parser.add_option("-O", "--output", dest="output",
+    parser.add_option("-O", "--output", dest="output", default="output.html",
                       help="Format: report.html")
 
     parser.add_option("-I", "--input", dest="input",
                       help="Format: file containing lines host:port:path_to_report.html")
 
-    parser.set_defaults(output='output.html')
+    parser.add_option("--openssl", dest="openssl_path", default="openssl",
+                      help="Custom path to openssl")
+
+    parser.add_option("--sslscan", dest="sslscan_path", default="sslscan",
+                      help="Custom path to sslscan")
+
+    parser.add_option("--curl", dest="curl_path", default="curl",
+                      help="Custom path to curl")
+
+    parser.add_option("--nmap", dest="nmap_path", default="nmap",
+                      help="Custom path to nmap")
+
+    parser.add_option("--enable-recon", dest="enable_recon", action="store_true", default=False,
+                      help="Enable Nmap recon - default is disabled")
+
     (options, args) = parser.parse_args()
+
+    commands = TestingCommands(ssh_cmd=options.ssh, openssl_path=options.openssl_path,
+                               sslscan_path=options.sslscan_path, curl_path=options.curl_path,
+                               nmap_path=options.nmap_path)
 
     if options.input is None:
         if options.host is None or options.port is None:
@@ -442,7 +531,7 @@ def main(argv):
             return
 
     if options.host is not None and options.port is not None:
-        start_scan(options)
+        start_scan(options, commands)
         return
 
     saved_output_files = []
@@ -455,28 +544,28 @@ def main(argv):
         options.port = port
         options.output = output
 
-        start_scan(options=options)
-
+        start_scan(options, commands)
         saved_output_files.append(output)
 
-    print "--> Batch test concluded"
+    print '#### Batch test concluded'
     for output in saved_output_files:
-        print "-> Output: %s" % output
+        print '-> Output: %s' % output
 
 
-def start_scan(options):
+def start_scan(options, commands):
     params = dict(host=options.host, port=options.port)
-    print "--> Starting sslscan against %s:%s" % (options.host, options.port)
-    print "-> Output result: %s" % options.output
-    result = run_ssl_scan(params, options)
-    for l in result:
-        print l,
 
-    print "Parsing results..."
-    result = filter_result(result)
-    verified = parse_result(params, options, result)
+    print '#### Starting sslscan against %s:%s -> output: %s' % (options.host, options.port, options.output)
+
+    cmd = commands.sslscan_command().format(**params)
+    result = execute_cmd(cmd)
+    print '-> SSLScan output:'
+    print result
+
+    result = result.split('\n')
+    verified = parse_result(result)
     generate_evidences(params=params, options=options, result=result, verified=verified)
-    print "-> Check out the report output: %s" % options.output
+    print '-> Check out the report output: %s' % options.output
 
 
 if __name__ == '__main__':

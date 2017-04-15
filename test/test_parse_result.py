@@ -64,7 +64,7 @@ class Options:
 
 class TestParseResult(TestCase):
     def test_parse_result(self):
-        verified = parse_result(params=dict(), options=Options(), result=result.split('\n'))
+        verified = parse_result(result=result.split('\n'))
 
         for k in verified.keys():
             v = verified[k]
