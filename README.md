@@ -22,6 +22,13 @@ Options:
   -I INPUT, --input=INPUT
                         Format: file containing lines
                         host:port:path_to_report.html
+  --openssl=OPENSSL_PATH
+                        Custom path to openssl
+  --sslscan=SSLSCAN_PATH
+                        Custom path to sslscan
+  --curl=CURL_PATH      Custom path to curl
+  --nmap=NMAP_PATH      Custom path to nmap
+  --enable-recon        Enable Nmap recon - default is disabled
 ```
   
 # Examples
