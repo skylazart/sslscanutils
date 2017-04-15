@@ -4,7 +4,7 @@ Parse sslscan output and generate evidences using openssl
 
 # Download
 
-## [Click here to download latest version](https://git.trustwave.com/fsantos/sslscanutil/raw/459e82caf8ad659da48304e6faab36079f7cd216/sslscanutil.py)
+## [Click here to download latest version](https://raw.githubusercontent.com/skylazart/sslscanutils/master/src/sslscanutil.py)
 
 # Help
 
