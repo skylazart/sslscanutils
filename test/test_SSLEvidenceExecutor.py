@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from scanutil import SSLEvidenceExecutor
+from sslscanutil import SSLEvidenceExecutor
 
 
 class Options:

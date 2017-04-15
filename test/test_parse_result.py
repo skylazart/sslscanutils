@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from scanutil import parse_result
+from sslscanutil import parse_result
 
 result = """
 OpenSSL 1.0.1m-dev xx XXX xxxx

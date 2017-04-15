@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from scanutil import Report
+from sslscanutil import Report
 
 
 class TestReport(TestCase):

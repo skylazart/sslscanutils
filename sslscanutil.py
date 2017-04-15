@@ -9,7 +9,7 @@ import gzip
 import base64
 import uuid
 
-"""scanutil.py: Utility to help generating evidences for basic SSL stuff"""
+"""sslscanutil.py: Utility to help generating evidences for basic SSL stuff"""
 __author__ = 'Felipe Cerqueira - FSantos@trustwave.com'
 
 

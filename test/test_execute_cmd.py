@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from scanutil import execute_cmd
+from sslscanutil import execute_cmd
 
 
 class TestExecute_cmd(TestCase):

@@ -2,17 +2,26 @@
 
 Parse sslscan output and generate evidences using openssl
 
+# Download
+
+## [Click here to download latest version](https://git.trustwave.com/fsantos/sslscanutil/raw/459e82caf8ad659da48304e6faab36079f7cd216/sslscanutil.py)
+
 # Help
 
 ```
-./scanutil.py -h
-Usage: scanutil.py [options]
+./sslscanutil.py -h
+Usage: sslscanutil.py [options]
 
 Options:
   -h, --help            show this help message and exit
   -H HOST, --host=HOST  Format: hostname or IP address
   -P PORT, --port=PORT  Format: destination port address
   -S SSH, --ssh=SSH     Format: 'ssh user@host'
+  -O OUTPUT, --output=OUTPUT
+                        Format: report.html
+  -I INPUT, --input=INPUT
+                        Format: file containing lines
+                        host:port:path_to_report.html
 ```
   
 # Examples
@@ -28,40 +37,31 @@ Options:
 ./scanutil.py -H target -P 443
 ```
 
+* Batch mode
+
+```
+echo "host1:443:host1.html" > batch.txt
+echo "host2:443:host2.html" >> batch.txt
+
+./sslscanutil.py -I batch.txt
+or
+./sslscanutil.py -I batch.txt -S 'ssh root@vrpt'
+```
+
+# Screenshot
+
+![screenshot](https://git.trustwave.com/fsantos/sslscanutil/raw/master/screenshot/scanresult.png?raw=true)
+
 # Status
 
-There are some tests missing, like SSLv3 for example. If you are using this tool and want to contribute, 
-please open an issue including the sslscan output.
-
-# Common problems
-
-If you are using a Kali Linux to run the openssl commands remotely, you may see the following error:
-
-```
-unknown option -ssl3
-```
-
-In this case, I found this instructions to fix it:
-https://bugs.kali.org/view.php?id=3190
-
-Basically:
-
-```
-apt-get update
-apt-get build-dep openssl
-apt-get source openssl
-cd openssl-1.0.2g
-... edit debian/rules, remove no-ssl2 nossl3 no-ssl3-method from CONFARGS on line 29 ...
-
-dpkg-buildpackage
-cd ..
-dpkg -i openssl_1.0.2g-1_amd64.deb
-dpkg -i libssl1.0.2_1.0.2g-1_amd64.deb
-```
+This tool is not only a SSL checker. We are already scanning for HSTS and looking for HTTP port opened.
+Any interesting idea to improve the software? Let me know or send a PR.
 
 # Missing features
 
 * Allow customizing openssl and curl path (locally or remote)
-* Check expired SSL certificates
+* Check for expired SSL certificates
+
+Please, send your ideas!
 
 Thanks
