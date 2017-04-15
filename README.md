@@ -66,7 +66,6 @@ Any interesting idea to improve the software? Let me know or send a PR.
 
 # Missing features
 
-* Allow customizing openssl and curl path (locally or remote)
 * Check for expired SSL certificates
 
 Please, send your ideas!
