@@ -28,16 +28,16 @@ class TestingCommands:
         return '%s --no-color {host}:{port}' % self._sslscan_path
 
     def test_sslv2(self):
-        return '%s s_client -connect {host}:{port} -ssl2' % self._openssl_path
+        return '%s s_client -connect {host}:{port} -ssl2 -servername {host}' % self._openssl_path
 
     def test_sslv3(self):
-        return '%s s_client -connect {host}:{port} -ssl3' % self._openssl_path
+        return '%s s_client -connect {host}:{port} -ssl3 -servername {host}' % self._openssl_path
 
     def test_tls1(self):
-        return '%s s_client -tls1 -connect {host}:{port}' % self._openssl_path
+        return '%s s_client -tls1 -connect {host}:{port} -servername {host}' % self._openssl_path
 
     def test_weak_cipher(self):
-        return '%s s_client -{tls} -cipher \'{cipher}\' -connect {host}:{port}' % self._openssl_path
+        return '%s s_client -{tls} -cipher \'{cipher}\' -connect {host}:{port} -servername {host}' % self._openssl_path
 
     def recon(self):
         return '%s -T4 -sV --top-ports 25 {host}' % self._nmap_path
@@ -49,7 +49,7 @@ class TestingCommands:
         return '%s -m 10 -ksv http://{host}' % self._curl_path
 
     def test_self_signed_renegotiation(self):
-        return '%s s_client -connect {host}:{port}' % self._openssl_path
+        return '%s s_client -connect {host}:{port} -servername {host}' % self._openssl_path
 
 
 class Finding:
@@ -250,7 +250,7 @@ class SslEvidenceGenerator:
 
         for cipher in ciphers:
             params_tls_cipher = dict(self._params, tls=tls, cipher=cipher)
-            title = 'Evidence using weak cipher {tls} ({cipher}) on {host} port {port}:'.format(**params_tls_cipher)
+            title = 'Evidence using weak cipher ({cipher}) on {host} port {port}:'.format(**params_tls_cipher)
             cmd = self._commands.test_weak_cipher().format(**params_tls_cipher)
 
             print '## %s' % title
